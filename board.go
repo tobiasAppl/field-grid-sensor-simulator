@@ -23,7 +23,10 @@ type Board struct {
 }
 
 func (board *Board) getCellNrForTargetPosition(target_pos Point2d) int {
-    if board.height <= 0 || board.width == 0 || board.grid == nil{
+    if board.height <= 0 || board.width == 0 ||
+        target_pos.x < 0 || board.width <= target_pos.x ||
+        target_pos.y < 0 || board.height <= target_pos.y ||
+        board.grid == nil {
         return 0
     }
     var u int = int(math.Floor((target_pos.x * float64(board.grid.n_cells_h))/board.width))
