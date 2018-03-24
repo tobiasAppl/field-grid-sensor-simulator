@@ -5,13 +5,24 @@ import (
     "math"
 )
 
-func newBoard() *Board {
+/*func newBoard() *Board {
     board := new(Board)
     board.height = 1
     board.width = 1
     grid := new(Grid)
     grid.n_cells_v = 1
     grid.n_cells_h = 1
+    board.grid = grid
+    return board
+}*/
+
+func newBoard(height, width float64, n_cells_v, n_cells_h int) *Board {
+    board := new(Board)
+    board.height = height
+    board.width = width
+    grid := new(Grid)
+    grid.n_cells_v = n_cells_v
+    grid.n_cells_h = n_cells_h
     board.grid = grid
     return board
 }

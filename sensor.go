@@ -25,5 +25,5 @@ func (sensor Sensor) calculate_field_effect(target_pos Point2d) float64  {
 }
 
 func (sensor Sensor) String() string {
-    return fmt.Sprintf("Sensor {\n  pos: %s\n val_min: %f\n  val_max: %f\n}", sensor.pos, sensor.val_min, sensor.val_max)
+    return fmt.Sprintf("Sensor {\n  pos: %s\n  val_min: %f\n  val_max: %f\n}", sensor.pos, sensor.val_min, sensor.val_max)
 }
