@@ -3,10 +3,10 @@ package main;
 import "fmt"
 
 type Grid struct {
-    subd_vertical int
-    subd_horizontal int
+    n_cells_v int
+    n_cells_h int
 }
 
 func (grid Grid) String() string {
-    return fmt.Sprintf("Grid {\n  subd_vert: %d\n  subd_hor: %d\n}", grid.subd_vertical, grid.subd_horizontal)
+    return fmt.Sprintf("Grid {\n  n_cells_v: %d\n  n_cells_h: %d\n}", grid.n_cells_v, grid.n_cells_h)
 }

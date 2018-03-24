@@ -2,12 +2,91 @@ package main;
 
 import "fmt"
 
+func newBoard() *Board {
+    board := new(Board)
+    board.height = 1
+    board.width = 1
+    grid := new(Grid)
+    grid.n_cells_v = 1
+    grid.n_cells_h = 1
+    board.grid = grid
+    return board
+}
+
 type Board struct {
     height, width float64
     grid *Grid
     sensors []*Sensor
 }
 
+func (board *Board) populateSensors(val_min, val_max float64, dist_func DistanceFunc2d) {
+    if board.grid == nil {
+        return
+    }
+    var n_sens_v int = board.grid.n_cells_v + 1
+    var n_sens_h int = board.grid.n_cells_h + 1
+
+    var cell_height float64 = board.height / float64(board.grid.n_cells_v)
+    var cell_width float64 = board.width / float64(board.grid.n_cells_h)
+
+    for i_v := 0; i_v < n_sens_v; i_v++ {
+        for i_h := 0; i_h < n_sens_h; i_h++ {
+            var sensor *Sensor = new(Sensor)
+            sensor.val_min = val_min
+            sensor.val_max = val_max
+            sensor.dist_func = dist_func
+
+            var pos Point2d
+            pos.x = float64(i_v) * cell_width
+            pos.y = float64(i_h) * cell_height
+
+            sensor.pos = pos
+
+            board.sensors = append(board.sensors, sensor)
+        }
+    }
+}
+
+func (board *Board) setSensorMinValue(val_min float64) {
+    if board.sensors == nil {
+        return
+    }
+    for _, v := range board.sensors {
+        v.val_min = val_min
+    }
+}
+
+func (board *Board) setSensorMaxValue(val_max float64) {
+    if board.sensors == nil {
+        return
+    }
+    for _, v := range board.sensors {
+        v.val_max = val_max
+    }
+}
+
+func (board *Board) setSensorEffectDistanceFunction(dist_func DistanceFunc2d) {
+    if board.sensors == nil {
+        return
+    }
+    for _, v := range board.sensors {
+        v.dist_func = dist_func
+    }
+}
+
+func (board *Board) generateSensorDataForTarget(target_pos Point2d) []float64 {
+    var sensor_values []float64
+    if board.sensors == nil {
+        return sensor_values
+    }
+
+    for _, sensor := range board.sensors {
+        var value float64 = sensor.calculate_field_effect(target_pos)
+        sensor_values = append(sensor_values, value)
+    }
+
+    return sensor_values
+}
 
 func (board Board) String() string {
     sensor_str := "["

@@ -21,7 +21,7 @@ func (sensor Sensor) calculate_field_effect(target_pos Point2d) float64  {
     var dist_fac float64 = sensor.dist_func.calcDistanceFactor(sensor.pos, target_pos)
     var val_diff float64 = sensor.val_max - sensor.val_min
 
-    return val_diff * dist_fac
+    return sensor.val_min + (val_diff * dist_fac)
 }
 
 func (sensor Sensor) String() string {

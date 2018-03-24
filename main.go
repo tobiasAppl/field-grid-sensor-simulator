@@ -4,7 +4,7 @@ import "fmt"
 
 func main() {
 
-    board := new(Board)
+    board := newBoard()
     fmt.Println(board)
 }
 
