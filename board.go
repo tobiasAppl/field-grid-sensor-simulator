@@ -1,6 +1,9 @@
 package main;
 
-import "fmt"
+import (
+    "fmt"
+    "math"
+)
 
 func newBoard() *Board {
     board := new(Board)
@@ -17,6 +20,17 @@ type Board struct {
     height, width float64
     grid *Grid
     sensors []*Sensor
+}
+
+func (board *Board) getCellNrForTargetPosition(target_pos Point2d) int {
+    if board.height <= 0 || board.width == 0 || board.grid == nil{
+        return 0
+    }
+    var u int = int(math.Floor((target_pos.x * float64(board.grid.n_cells_h))/board.width))
+    var v int = int(math.Floor((target_pos.y * float64(board.grid.n_cells_v))/board.height))
+
+    var n_cell int = v * board.grid.n_cells_h + u + 1
+    return n_cell
 }
 
 func (board *Board) populateSensors(val_min, val_max float64, dist_func DistanceFunc2d) {
