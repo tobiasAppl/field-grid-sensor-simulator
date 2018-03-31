@@ -149,18 +149,16 @@ func (board *Board) generateSensorDataForTarget(target_pos Point2d) []float64 {
 }
 
 func (board Board) String() string {
-    sensor_str := "["
-    for _, sensor_ptr := range board.sensors {
-        sensor_str = fmt.Sprintf("%s\n%s", sensor_str, *sensor_ptr)
-    }
-    sensor_str = fmt.Sprintf("%s\n  ]", sensor_str)
+    sensor_str := "  x  |  y  | val \n"
+    for s_i, sensor_ptr := range board.sensors {
+        sensor_str = fmt.Sprintf("%s%.4f | %.4f | %.4f \n", sensor_str,
+        sensor_ptr.pos.x, sensor_ptr.pos.y, board.last_sensor_values[s_i]) }
 
-    last_sensor_values_str := "["
-    for _, last_sensor_value := range board.last_sensor_values {
-        last_sensor_values_str = fmt.Sprintf("%s %f", last_sensor_values_str, last_sensor_value)
-    }
-    last_sensor_values_str = fmt.Sprintf("%s ]", last_sensor_values_str)
+//    last_sensor_values_str := "[" for _, last_sensor_value := range
+//    board.last_sensor_values { last_sensor_values_str = fmt.Sprintf("%s %f",
+//    last_sensor_values_str, last_sensor_value) } last_sensor_values_str =
+//    fmt.Sprintf("%s ]", last_sensor_values_str)
 
-    return fmt.Sprintf("Board {\n  h: %f\n  w: %f\n  grid: %s\n  sensor_arry:%s\n  sensor_data:%s\n}", board.height, board.width, board.grid, sensor_str, last_sensor_values_str)
-}
+    return fmt.Sprintf("Board {\n  h: %f\n  w: %f\n  grid: %s\n  sensors:\n%s
+    \n }", board.height, board.width, board.grid, sensor_str) }
 
