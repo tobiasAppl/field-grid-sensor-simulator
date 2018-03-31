@@ -1,15 +1,17 @@
 package main;
 
-import "fmt"
+import "os"
+//import "fmt"
+import "log"
 
 func main() {
+    errlog := log.New(os.Stderr, "", 0)
+    app, err := newFieldGridSensorSimulator()
+    if err != nil {
+        errlog.Println(err)
+        os.Exit(1)
+    }
 
-    board := newBoard(1, 3, 10, 5)
-//    board.populateSensors(0, 10, LinearDistanceFunction2d{4})
-    board.populateSensors(0,0, PhysicalDistanceFunction2d{0.35})
-
-    field_pnt := Point2d{1, 2}
-    board.generateSensorDataForTarget(field_pnt)
-    fmt.Println(board)
+    os.Exit(app.run())
 }
 
