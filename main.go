@@ -1,8 +1,9 @@
 package main;
 
-import "os"
-//import "fmt"
-import "log"
+import (
+    "os"
+    "log"
+)
 
 func main() {
     errlog := log.New(os.Stderr, "", 0)
