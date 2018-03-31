@@ -3,6 +3,8 @@ package main;
 import (
     "fmt"
     "math"
+    "sync"
+    "runtime"
 )
 
 /*func newBoard() *Board {
@@ -31,6 +33,7 @@ type Board struct {
     height, width float64
     grid *Grid
     sensors []*Sensor
+    last_sensor_values []float64
 }
 
 func (board *Board) getCellNrForTargetPosition(target_pos Point2d) int {
@@ -73,6 +76,11 @@ func (board *Board) populateSensors(val_min, val_max float64, dist_func Distance
             board.sensors = append(board.sensors, sensor)
         }
     }
+    if board.last_sensor_values != nil || len(board.last_sensor_values) != len(board.sensors) {
+        board.last_sensor_values = nil //free allocated space
+        runtime.GC() //force garbage collection
+    }
+    board.last_sensor_values = make([]float64, len(board.sensors))
 }
 
 func (board *Board) setSensorMinValue(val_min float64) {
@@ -102,18 +110,42 @@ func (board *Board) setSensorEffectDistanceFunction(dist_func DistanceFunc2d) {
     }
 }
 
+func (board *Board) _generateSensorDataMap(target_pos *Point2d, i0, i1 int, wg *sync.WaitGroup) {
+    defer wg.Done()
+
+    if (i1-i0) == 1 {
+        board.last_sensor_values[i0] = board.sensors[i0].calculate_field_effect(*target_pos)
+    } else {
+        var wg_c sync.WaitGroup
+        wg_c.Add(2)
+
+        var im int = i0 + ((i1-i0)/2)
+
+        go board._generateSensorDataMap(target_pos, i0, im, &wg_c)
+        go board._generateSensorDataMap(target_pos, im, i1, &wg_c)
+
+        wg_c.Wait()
+    }
+}
+
 func (board *Board) generateSensorDataForTarget(target_pos Point2d) []float64 {
-    var sensor_values []float64
     if board.sensors == nil {
-        return sensor_values
+        return board.last_sensor_values
     }
-
-    for _, sensor := range board.sensors {
-        var value float64 = sensor.calculate_field_effect(target_pos)
-        sensor_values = append(sensor_values, value)
+    if board.last_sensor_values != nil || len(board.last_sensor_values) != len(board.sensors) {
+        board.last_sensor_values = nil //free allocated space
+        runtime.GC() //force garbage collection
     }
+    board.last_sensor_values = make([]float64, len(board.sensors))
 
-    return sensor_values
+    var wgT sync.WaitGroup
+    wgT.Add(1)
+
+    go board._generateSensorDataMap(&target_pos, 0, len(board.sensors), &wgT)
+
+    wgT.Wait()
+
+    return board.last_sensor_values
 }
 
 func (board Board) String() string {
@@ -123,6 +155,12 @@ func (board Board) String() string {
     }
     sensor_str = fmt.Sprintf("%s\n  ]", sensor_str)
 
-    return fmt.Sprintf("Board {\n  h: %f\n  w: %f\n  grid: %s\n  sensors:%s\n}", board.height, board.width, board.grid, sensor_str)
+    last_sensor_values_str := "["
+    for _, last_sensor_value := range board.last_sensor_values {
+        last_sensor_values_str = fmt.Sprintf("%s %f", last_sensor_values_str, last_sensor_value)
+    }
+    last_sensor_values_str = fmt.Sprintf("%s ]", last_sensor_values_str)
+
+    return fmt.Sprintf("Board {\n  h: %f\n  w: %f\n  grid: %s\n  sensor_arry:%s\n  sensor_data:%s\n}", board.height, board.width, board.grid, sensor_str, last_sensor_values_str)
 }
 

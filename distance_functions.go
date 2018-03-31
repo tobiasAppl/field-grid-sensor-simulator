@@ -17,8 +17,7 @@ func (ldf LinearDistanceFunc2d) calcDistanceFactor(p0, p1 Point2d) float64 {
     }
     var diffVec Point2d = p0.substract(p1)
     var diffVecLen float64 = diffVec.length()
-
-    var lenNorm = 1 - math.Abs(diffVecLen/ldf.max_distance)
+    var lenNorm float64 = 1 - math.Abs(diffVecLen/ldf.max_distance)
 
     if lenNorm <= 0 {
         return 0
