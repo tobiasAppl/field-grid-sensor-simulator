@@ -1,2 +1,4 @@
 *.swp
-boardSimulator
+*.tmp
+tmp/
+field-grid-sensor-simulator
