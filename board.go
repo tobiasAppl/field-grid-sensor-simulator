@@ -50,26 +50,24 @@ func (board *Board) getCellNrForTargetPosition(target_pos Point2d) int {
     return n_cell
 }
 
-func (board *Board) populateSensors(val_min, val_max float64, dist_func DistanceFunc2d) {
+func (board *Board) populateSensors(val_min, val_max float64, dist_func DistanceFunction2d) {
     if board.grid == nil {
         return
     }
-    var n_sens_v int = board.grid.n_cells_v + 1
-    var n_sens_h int = board.grid.n_cells_h + 1
-
     var cell_height float64 = board.height / float64(board.grid.n_cells_v)
     var cell_width float64 = board.width / float64(board.grid.n_cells_h)
+    fmt.Printf("cell_height=%f; cell_width=%f\n", cell_height, cell_width)
 
-    for i_v := 0; i_v < n_sens_v; i_v++ {
-        for i_h := 0; i_h < n_sens_h; i_h++ {
+    for i_v := 0; i_v <= board.grid.n_cells_v; i_v++ {
+        for i_h := 0; i_h <= board.grid.n_cells_h; i_h++ {
             var sensor *Sensor = new(Sensor)
             sensor.val_min = val_min
             sensor.val_max = val_max
             sensor.dist_func = dist_func
 
             var pos Point2d
-            pos.x = float64(i_v) * cell_width
-            pos.y = float64(i_h) * cell_height
+            pos.x = float64(i_h) * cell_width
+            pos.y = float64(i_v) * cell_height
 
             sensor.pos = pos
 
@@ -101,7 +99,7 @@ func (board *Board) setSensorMaxValue(val_max float64) {
     }
 }
 
-func (board *Board) setSensorEffectDistanceFunction(dist_func DistanceFunc2d) {
+func (board *Board) setSensorEffectDistanceFunction(dist_func DistanceFunction2d) {
     if board.sensors == nil {
         return
     }
@@ -149,16 +147,12 @@ func (board *Board) generateSensorDataForTarget(target_pos Point2d) []float64 {
 }
 
 func (board Board) String() string {
-    sensor_str := "  x  |  y  | val \n"
+    sensor_str := "   x   |    y   |  val \n------------------------"
     for s_i, sensor_ptr := range board.sensors {
-        sensor_str = fmt.Sprintf("%s%.4f | %.4f | %.4f \n", sensor_str,
-        sensor_ptr.pos.x, sensor_ptr.pos.y, board.last_sensor_values[s_i]) }
+        sensor_str = fmt.Sprintf("%s\n%.4f | %.4f | %.4f", sensor_str, sensor_ptr.pos.x, sensor_ptr.pos.y, board.last_sensor_values[s_i])
+    }
 
-//    last_sensor_values_str := "[" for _, last_sensor_value := range
-//    board.last_sensor_values { last_sensor_values_str = fmt.Sprintf("%s %f",
-//    last_sensor_values_str, last_sensor_value) } last_sensor_values_str =
-//    fmt.Sprintf("%s ]", last_sensor_values_str)
+    return fmt.Sprintf("Board {\n  h: %f\n  w: %f\n  grid: %s\n  sensors: {\n%s\n  }\n}", board.height, board.width, board.grid, sensor_str)
+}
 
-    return fmt.Sprintf("Board {\n  h: %f\n  w: %f\n  grid: %s\n  sensors:\n%s
-    \n }", board.height, board.width, board.grid, sensor_str) }
 

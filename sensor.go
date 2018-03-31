@@ -7,21 +7,19 @@ func newSensor() *Sensor {
     sensor.pos = Point2d{0,0}
     sensor.val_min = 0
     sensor.val_max = 1
-    sensor.dist_func = LinearDistanceFunc2d{ 1 }
+    sensor.dist_func = LinearDistanceFunction2d{ 1 }
     return sensor
 }
 
 type Sensor struct {
     pos Point2d
     val_min, val_max float64
-    dist_func DistanceFunc2d
+    dist_func DistanceFunction2d
 }
 
 func (sensor Sensor) calculate_field_effect(target_pos Point2d) float64  {
-    var dist_fac float64 = sensor.dist_func.calcDistanceFactor(sensor.pos, target_pos)
-    var val_diff float64 = sensor.val_max - sensor.val_min
-
-    return sensor.val_min + (val_diff * dist_fac)
+    var dist_fac float64 = sensor.dist_func.calcDistanceFactor(&sensor, target_pos)
+    return dist_fac
 }
 
 func (sensor Sensor) String() string {
