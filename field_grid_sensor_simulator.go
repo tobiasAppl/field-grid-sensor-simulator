@@ -6,6 +6,7 @@ import (
     "errors"
     "encoding/json"
     "os"
+    "io"
 )
 
 const DEFAULT_CONFIG_FILE = "/dev/null"
@@ -25,6 +26,7 @@ func newFieldGridSensorSimulator() (*FieldGridSensorSimulator, error) {
     if parse_err != nil {
         return nil, parse_err
     }
+    fmt.Println("new fgss end")
 //    app.run_count = *run_count_ptr
     return app, nil
 }
@@ -49,7 +51,7 @@ func (fgss *FieldGridSensorSimulator) parse_config_json() error {
 
     json_reader := json.NewDecoder(cfile)
     decoding_err := json_reader.Decode(&(fgss.configuration))
-    if decoding_err != nil {
+    if decoding_err != nil && decoding_err != io.EOF {
         return decoding_err
     }
 
