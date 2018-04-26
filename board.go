@@ -110,7 +110,7 @@ func (board *Board) setSensorEffectDistanceFunction(dist_func DistanceFunction2d
 
 func (board *Board) _generateSensorDataMap(target_pos *Point2d, i0, i1 int, val_arr []float64, wg *sync.WaitGroup) {
     defer wg.Done()
-    fmt.Printf("i0: %d, i1: %d; val_arr.len: %d\n", i0, i1, len(val_arr))
+//    fmt.Printf("i0: %d, i1: %d; val_arr.len: %d\n", i0, i1, len(val_arr))
     if (i1-i0) == 1 {
         val_arr[i0] = board.sensors[i0].calculate_field_effect(*target_pos)
     } else {
@@ -134,16 +134,16 @@ func (board *Board) generateSensorDataForTarget(target_pos Point2d) []float64 {
         board.last_sensor_values = nil //free allocated space
         runtime.GC() //force garbage collection
     }
-    
+
     var result_values []float64 = make([]float64, len(board.sensors))
     var wgT sync.WaitGroup
     wgT.Add(1)
-    fmt.Printf("board.sensors.len: %d; result_values.len: %d\n",len(board.sensors), len(result_values))
-    fmt.Printf("board.sensors.cap: %d; result_values.cap: %d\n",cap(board.sensors), cap(result_values))
+//    fmt.Printf("board.sensors.len: %d; result_values.len: %d\n",len(board.sensors), len(result_values))
+//    fmt.Printf("board.sensors.cap: %d; result_values.cap: %d\n",cap(board.sensors), cap(result_values))
     go board._generateSensorDataMap(&target_pos, 0, len(board.sensors), result_values, &wgT)
 
     wgT.Wait()
-
+//    fmt.Printf("finished m-r sensor data generation")
     return result_values
 }
 
