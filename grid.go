@@ -8,5 +8,5 @@ type Grid struct {
 }
 
 func (grid Grid) String() string {
-    return fmt.Sprintf("Grid {\n  n_cells_v: %d\n  n_cells_h: %d\n}", grid.n_cells_v, grid.n_cells_h)
+    return fmt.Sprintf("{\n\"n_cells_v\": \"%d\",\n\"n_cells_h\": \"%d\"\n}", grid.n_cells_v, grid.n_cells_h)
 }

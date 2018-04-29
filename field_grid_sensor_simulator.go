@@ -58,13 +58,18 @@ func (fgss *FieldGridSensorSimulator) parse_config_json() error {
     return nil
 }
 
-func (fgss *FieldGridSensorSimulator) run() int {
+func (fgss *FieldGridSensorSimulator) run() (int, error) {
+    fmt.Println("run start")
     board := newBoard(1, 3, 10, 5)
 //    board.populateSensors(0, 10, LinearDistanceFunction2d{4})
     board.populateSensors(0,0, PhysicalDistanceFunction2d{0.35})
+    fmt.Println("run start")
 
     field_pnt := Point2d{1, 2}
-    board.generateSensorDataForTarget(field_pnt)
-    fmt.Println(board)
-    return 0
+    update_err := board.updateSensorDataForTarget(field_pnt)
+    if update_err != nil {
+        return 1, update_err
+    }
+    fmt.Printf("board: %s\n", board)
+    return 0, nil
 }

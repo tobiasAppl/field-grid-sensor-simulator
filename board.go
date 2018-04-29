@@ -126,34 +126,35 @@ func (board *Board) _generateSensorDataMap(target_pos *Point2d, i0, i1 int, val_
     }
 }
 
-func (board *Board) generateSensorDataForTarget(target_pos Point2d) []float64 {
+func (board *Board) updateSensorDataForTarget(target_pos Point2d) error {
     if board.sensors == nil {
-        return board.last_sensor_values
+        return nil
     }
     if board.last_sensor_values != nil || len(board.last_sensor_values) != len(board.sensors) {
         board.last_sensor_values = nil //free allocated space
         runtime.GC() //force garbage collection
     }
 
-    var result_values []float64 = make([]float64, len(board.sensors))
+    board.last_sensor_values = make([]float64, len(board.sensors))
     var wgT sync.WaitGroup
     wgT.Add(1)
 //    fmt.Printf("board.sensors.len: %d; result_values.len: %d\n",len(board.sensors), len(result_values))
 //    fmt.Printf("board.sensors.cap: %d; result_values.cap: %d\n",cap(board.sensors), cap(result_values))
-    go board._generateSensorDataMap(&target_pos, 0, len(board.sensors), result_values, &wgT)
+    go board._generateSensorDataMap(&target_pos, 0, len(board.sensors), board.last_sensor_values, &wgT)
 
     wgT.Wait()
-//    fmt.Printf("finished m-r sensor data generation")
-    return result_values
+    fmt.Printf("finished m-r sensor data generation\n")
+    return nil
 }
 
 func (board Board) String() string {
-    sensor_str := "   x   |    y   |  val \n------------------------"
-    for s_i, sensor_ptr := range board.sensors {
-        sensor_str = fmt.Sprintf("%s\n%.4f | %.4f | %.4f", sensor_str, sensor_ptr.pos.x, sensor_ptr.pos.y, board.last_sensor_values[s_i])
-    }
+    sensor_str := ""
 
-    return fmt.Sprintf("Board {\n  h: %f\n  w: %f\n  grid: %s\n  sensors: {\n%s\n  }\n}", board.height, board.width, board.grid, sensor_str)
+    for _, sensor_ptr := range board.sensors {
+        sensor_str = fmt.Sprintf("%s\n{\n\"x\":\"%.4f\",\n\"y\":\"%.4f\"\n},", sensor_str, sensor_ptr.pos.x, sensor_ptr.pos.y)
+    }
+    sensor_str = sensor_str[:len(sensor_str)-1]
+    return fmt.Sprintf("{\n\"h\": \"%f\",\n\"w\": \"%f\",\n\"grid\": \n%s,\n\"sensors\": [%s\n]\n}", board.height, board.width, board.grid, sensor_str)
 }
 
 
