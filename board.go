@@ -56,7 +56,7 @@ func (board *Board) populateSensors(val_min, val_max float64, dist_func Distance
     }
     var cell_height float64 = board.height / float64(board.grid.n_cells_v)
     var cell_width float64 = board.width / float64(board.grid.n_cells_h)
-    fmt.Printf("cell_height=%f; cell_width=%f\n", cell_height, cell_width)
+//    fmt.Printf("cell_height=%f; cell_width=%f\n", cell_height, cell_width)
 
     for i_v := 0; i_v <= board.grid.n_cells_v; i_v++ {
         for i_h := 0; i_h <= board.grid.n_cells_h; i_h++ {
@@ -143,7 +143,7 @@ func (board *Board) updateSensorDataForTarget(target_pos Point2d) error {
     go board._generateSensorDataMap(&target_pos, 0, len(board.sensors), board.last_sensor_values, &wgT)
 
     wgT.Wait()
-    fmt.Printf("finished m-r sensor data generation\n")
+//    fmt.Printf("finished m-r sensor data generation\n")
     return nil
 }
 
@@ -155,6 +155,21 @@ func (board Board) String() string {
     }
     sensor_str = sensor_str[:len(sensor_str)-1]
     return fmt.Sprintf("{\n\"h\": \"%f\",\n\"w\": \"%f\",\n\"grid\": \n%s,\n\"sensors\": [%s\n]\n}", board.height, board.width, board.grid, sensor_str)
+}
+
+func (board* Board) lastSensorValuesToJSONString() string {
+    if board.last_sensor_values == nil {
+        return "[]"
+    }
+
+    sensor_value_str := ""
+    for _, sens_val := range board.last_sensor_values {
+        sensor_value_str = fmt.Sprintf("%s\"%.8f\", ", sens_val)
+    }
+    if len(sensor_value_str) > 2 {
+        sensor_value_str = sensor_value_str[:len(sensor_value_str)-2]
+    }
+    return fmt.Sprintf("[%s]", sensor_value_str)
 }
 
 

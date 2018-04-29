@@ -32,7 +32,8 @@ func newFieldGridSensorSimulator() (*FieldGridSensorSimulator, error) {
 }
 
 type AppConfiguration struct {
-
+    output_file_path string
+    randomized bool
 }
 
 type FieldGridSensorSimulator struct {
@@ -70,6 +71,6 @@ func (fgss *FieldGridSensorSimulator) run() (int, error) {
     if update_err != nil {
         return 1, update_err
     }
-    fmt.Printf("board: %s\n", board)
+    fmt.Printf("{\n \"board\": %s\n", board)
     return 0, nil
 }

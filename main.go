@@ -3,7 +3,7 @@ package main;
 import (
     "os"
     "log"
-    "fmt"
+//    "fmt"
 )
 
 func main() {
@@ -18,7 +18,6 @@ func main() {
     if err != nil {
         errlog.Println(err)
     }
-    fmt.Println("pre exit")
     os.Exit(retval)
 }
 
