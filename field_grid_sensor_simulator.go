@@ -5,8 +5,9 @@ import (
     "fmt"
     "errors"
     "encoding/json"
-    "os"
     "io"
+    "io/ioutil"
+    "os"
 )
 
 const DEFAULT_CONFIG_FILE = "/dev/null"
@@ -26,20 +27,23 @@ func newFieldGridSensorSimulator() (*FieldGridSensorSimulator, error) {
     if parse_err != nil {
         return nil, parse_err
     }
-//    fmt.Println("new fgss end")
+    fmt.Println("new fgss end")
 //    app.run_count = *run_count_ptr
     return app, nil
 }
 
 type InputPointConfiguration struct {
-    points []Point2d
+    points []Point2d 
 }
 
 type AppConfiguration struct {
-    board_height, board_width float64
-    nr_cells_vertical, nr_cells_horizontal int
-    input_point_file_path, output_file_path string
-    randomized bool
+    board_height float64                `json:"board_height"`
+    board_width float64                 `json:"board_width"`
+    nr_cells_vertical int               `json:"nr_cells_vertical"`
+    nr_cells_horizontal int             `json:"nr_cells_horizontal"`
+    input_point_file_path string        `json:"input_point_file_path"`
+    output_file_path string             `json:"output_file_path"`
+    randomized bool                     `json:"randomized"`
 }
 
 type FieldGridSensorSimulator struct {
@@ -50,30 +54,35 @@ type FieldGridSensorSimulator struct {
 }
 
 func (fgss *FieldGridSensorSimulator) parse_config_json() error {
-    cfile, err := os.Open(fgss.config_file_path)
+    if _, err := os.Stat(fgss.config_file_path); os.IsNotExist(err) {
+        return err
+    }
+    var cfile []byte
+    var err error
+    cfile, err = ioutil.ReadFile(fgss.config_file_path)
     if err != nil {
         return err
     }
-    defer cfile.Close()
-    fgss.configuration = AppConfiguration{}
+//    defer cfile.Close()
+    var in_config AppConfiguration
 
-    json_reader := json.NewDecoder(cfile)
-    decoding_err := json_reader.Decode(&(fgss.configuration))
+//    json_reader := json.NewDecoder(cfile)
+    decoding_err := json.Unmarshal(cfile, &in_config)
     if decoding_err != nil && decoding_err != io.EOF {
         return decoding_err
     }
-
+    fgss.configuration = in_config
     if len(fgss.configuration.input_point_file_path) > 0 {
-        ipfile, ipferr := os.Open(fgss.configuration.input_point_file_path)
+        ipfile, ipferr := ioutil.ReadFile(fgss.configuration.input_point_file_path)
         if ipferr != nil {
             return err
         }
-        defer ipfile.Close()
+//        defer ipfile.Close()
 
         fgss.input_points = InputPointConfiguration{}
 
-        ipfreader := json.NewDecoder(ipfile)
-        ipfdecoding_err := ipfreader.Decode(&(fgss.input_points))
+//        ipfreader := json.NewDecoder(ipfile)
+        ipfdecoding_err := json.Unmarshal(ipfile, &(fgss.input_points))
         if ipfdecoding_err != nil && ipfdecoding_err != io.EOF {
             return ipfdecoding_err
         }
@@ -89,7 +98,6 @@ func (fgss *FieldGridSensorSimulator) run() (int, error) {
                       fgss.configuration.nr_cells_horizontal)
 //    board.populateSensors(0, 10, LinearDistanceFunction2d{4})
     board.populateSensors(0,0, PhysicalDistanceFunction2d{0.35})
-    fmt.Println("run start")
 
     field_pnt := Point2d{1, 2}
     update_err := board.updateSensorDataForTarget(field_pnt)
