@@ -1,3 +1,7 @@
+/**
+ * Author: Tobias Appl <tobias.appl@gmail.com>
+**/
+
 package main;
 
 import (

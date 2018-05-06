@@ -1,3 +1,7 @@
+/**
+ * Author: Tobias Appl <tobias.appl@gmail.com>
+**/
+
 package main;
 
 type field_emmitter_2d interface {
