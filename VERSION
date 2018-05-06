@@ -1,0 +1,6 @@
+# v1.0
+
+* Inital version
+* No documentation yet
+* Map-Reduce parallelized sensor data generation
+* Simple field and grid system for sensor distribution
