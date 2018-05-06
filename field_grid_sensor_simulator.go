@@ -63,14 +63,20 @@ func (fgss *FieldGridSensorSimulator) parse_config_json() error {
     if err != nil {
         return err
     }
+    fmt.Printf("validJson: %b\n", json.Valid(cfile))
+
+    var cfilestr string = string(cfile[:len(cfile)])
+    fmt.Printf("%s\n", cfilestr)
 //    defer cfile.Close()
-    var in_config AppConfiguration
+    var in_config AppConfiguration = AppConfiguration{}
 
 //    json_reader := json.NewDecoder(cfile)
     decoding_err := json.Unmarshal(cfile, &in_config)
+    fmt.Printf("decoding_err=%s\n", decoding_err)
     if decoding_err != nil && decoding_err != io.EOF {
         return decoding_err
     }
+    fmt.Printf("%s\n", in_config)
     fgss.configuration = in_config
     if len(fgss.configuration.input_point_file_path) > 0 {
         ipfile, ipferr := ioutil.ReadFile(fgss.configuration.input_point_file_path)

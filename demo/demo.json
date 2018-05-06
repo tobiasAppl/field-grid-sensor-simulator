@@ -1,0 +1,10 @@
+{
+    "board_height": 10,
+    "board_width": 10,
+    "nr_cells_vertical": 30,
+    "nr_cells_horizontal": 30,
+    "input_point_file_path": "inputPointFilePath",
+    "output_file_path": "outputFilePath",
+    "randomized": false
+}
+
